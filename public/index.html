@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="Monitor de calidad del aire en tiempo real" />
+        <meta name="author" content="" />
+        <title>Monitor de Calidad del Aire</title>
+        
+        <link href="css/styles.css" rel="stylesheet" />
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+
+        <!-- Estilos CSS para la Animación (Sin cambios) -->
+        <style>
+            .sensor-view-block {
+                transition: opacity 0.5s ease-out, max-height 0.5s ease-out, visibility 0.5s ease-out, margin-bottom 0.5s ease-out;
+                opacity: 0;
+                max-height: 0;
+                visibility: hidden;
+                overflow: hidden; 
+                margin-bottom: 0; 
+            }
+            .sensor-view-block.is-visible {
+                opacity: 1;
+                max-height: 2000px; 
+                visibility: visible;
+                margin-bottom: 3rem; 
+            }
+        </style>
+
+    </head>
+    <body class="sb-nav-fixed">
+        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+            <a class="navbar-brand ps-3" href="index.html">Monitor de Aire</a>
+            <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+            <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+            </form>
+            
+            <!-- ============================================== -->
+            <!-- === AÑADIDO: Menú de Usuario === -->
+            <!-- ============================================== -->
+            <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user fa-fw me-1"></i>
+                        <span id="userEmailDisplay">Usuario</span> <!-- Mostraremos el email aquí -->
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" id="logoutButton" href="#!">Cerrar Sesión</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <!-- ============================================== -->
+            <!-- === FIN: Menú de Usuario === -->
+            <!-- ============================================== -->
+
+        </nav>
+        <div id="layoutSidenav">
+            <div id="layoutSidenav_nav">
+                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                    <div class="sb-sidenav-menu">
+                        <div class="nav">
+                            <div class="sb-sidenav-menu-heading">Principal</div>
+                            <a class="nav-link" href="index.html">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Dashboard
+                            </a>
+                            <div class="sb-sidenav-menu-heading">Complementos</div>
+                            <a class="nav-link" href="charts.html">
+                                <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                                Gráficas
+                            </a>
+                            <a class="nav-link" href="tables.html">
+                                <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                                Tablas Históricas
+                            </a>
+                        </div>
+                    </div>
+                    <!-- ============================================== -->
+                    <!-- === MODIFICADO: Pie del menú lateral (ahora es dinámico) === -->
+                    <!-- ============================================== -->
+                    <div class="sb-sidenav-footer">
+                        <div class="small">Conectado como:</div>
+                        <span id="userEmailSidenav">Cargando...</span>
+                    </div>
+                </nav>
+            </div>
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid px-4">
+                        <h1 class="mt-4">Monitor de Calidad del Aire</h1>
+                        <ol class="breadcrumb mb-4">
+                            <li class="breadcrumb-item active">Datos en Tiempo Real</li>
+                        </ol>
+                        
+                        <!-- Selector de Zona (Sin cambios) -->
+                        <div class="mb-4">
+                            <label for="zoneSelector" class="form-label"><strong>Seleccionar Estación:</strong></label>
+                            <select class="form-select" id="zoneSelector">
+                                <option value="Sensor_Sala" selected>Estación: Sensor Sala</option>
+                                <option value="Sensor_Patio">Estación: Sensor Patio</option>
+                            </select>
+                        </div>
+                        
+                        
+                        <!-- BLOQUE SENSOR 1: "Sensor_Sala" (Sin cambios) -->
+                        <div id="sensor-block-Sensor_Sala" class="sensor-view-block is-visible">
+                            
+                            <!-- Simbología de Calidad del Aire (para Sala) -->
+                            <div class="card mb-3"> 
+                                <div class="card-header py-2"> 
+                                    <strong class="small"><i class="fas fa-palette me-1"></i> Simbología: Calidad del Aire (NOM-172)</strong>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row row-cols-1 row-cols-md-3 row-cols-xl-5 g-2 text-center">
+                                        <div class="col"><div class="p-2 bg-primary text-white rounded shadow-sm"><small><strong>Buena</strong></small></div></div>
+                                        <div class="col"><div class="p-2 bg-success text-white rounded shadow-sm"><small><strong>Aceptable</strong></small></div></div>
+                                        <div class="col"><div class="p-2 bg-warning text-dark rounded shadow-sm"><small><strong>Mala</strong></small></div></div>
+                                        <div class="col"><div class="p-2 bg-danger text-white rounded shadow-sm"><small><strong>Muy Mala</strong></small></div></div>
+                                        <div class="col"><div class="p-2 bg-dark text-white rounded shadow-sm"><small><strong>Extremadamente Mala</strong></small></div></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fila de Partículas (para Sala) -->
+                            <div class="row">
+                                <!-- Tarjeta PM1 (Sala) -->
+                                <div class="col-xl-4 col-md-6">
+                                    <div id="card-pm1-Sensor_Sala" class="card bg-secondary text-white mb-4 shadow-lg">
+                                        <div class="card-body d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <span style="font-size: 0.9rem;">PM1</span>
+                                                <h2 id="data-pm1-Sensor_Sala" class="mt-1">---</h2>
+                                            </div>
+                                            <i class="fas fa-smog fa-2x text-white-50"></i>
+                                        </div>
+                                        <div class="card-footer d-flex align-items-center justify-content-between">
+                                            <span class="small last-update-time">Esperando datos...</span>
+                                            <div class="small text-white sync-icon"><i class="fas fa-sync fa-spin"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Tarjeta PM2.5 (Sala) -->
+                                <div class="col-xl-4 col-md-6">
+                                    <div id="card-pm25-Sensor_Sala" class="card bg-secondary text-white mb-4 shadow-lg">
+                                        <div class="card-body d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <span style="font-size: 0.9rem;">PM2.5</span>
+                                                <h2 id="data-pm25-Sensor_Sala" class="mt-1">---</h2>
+                                            </div>
+                                            <i class="fas fa-smog fa-2x text-white-50"></i>
+                                        </div>
+                                        <div class="card-footer d-flex align-items-center justify-content-between">
+                                            <span class="small last-update-time">Esperando datos...</span>
+                                            <div class="small text-white sync-icon"><i class="fas fa-sync fa-spin"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Tarjeta PM10 (Sala) -->
+                                <div class="col-xl-4 col-md-6">
+                                    <div id="card-pm10-Sensor_Sala" class="card bg-secondary text-white mb-4 shadow-lg">
+                                        <div class="card-body d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <span style="font-size: 0.9rem;">PM10</span>
+                                                <h2 id="data-pm10-Sensor_Sala" class="mt-1">---</h2>
+                                            </div>
+                                            <i class="fas fa-smog fa-2x text-white-50"></i>
+                                        </div>
+                                        <div class="card-footer d-flex align-items-center justify-content-between">
+                                            <span class="small last-update-time">Esperando datos...</span>
+                                            <div class="small text-white sync-icon"><i class="fas fa-sync fa-spin"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+
+                            <!-- Fila Ambientales (para Sala) -->
+                            <div class="row">
+                                <!-- Columna Temperatura (Sala) -->
+                                <div class="col-xl-6 col-md-6">
+                                    <div class="card mb-3">
+                                        <div class="card-header py-2"><strong class="small"><i class="fas fa-thermometer-half me-1"></i> Simbología: Temperatura</strong></div>
+                                        <div class="card-body">
+                                            <div class="row row-cols-1 row-cols-md-3 g-2 text-center">
+                                                <div class="col"><div class="p-2 bg-info text-dark rounded shadow-sm"><small><strong>Frío</strong> (&lt; 18°C)</small></div></div>
+                                                <div class="col"><div class="p-2 bg-success text-white rounded shadow-sm"><small><strong>Cálido</strong> (18-29°C)</small></div></div>
+                                                <div class="col"><div class="p-2 bg-danger text-white rounded shadow-sm"><small><strong>Calor</strong> (&gt; 29°C)</small></div></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="card-temp-Sensor_Sala" class="card bg-secondary text-white mb-4 shadow-lg">
+                                        <div class="card-body d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <span style="font-size: 0.9rem;">Temperatura</span>
+                                                <h2 id="data-temp-Sensor_Sala" class="mt-1">---</h2>
+                                            </div>
+                                            <i class="fas fa-thermometer-half fa-2x text-white-50"></i>
+                                        </div>
+                                        <div class="card-footer d-flex align-items-center justify-content-between">
+                                            <span class="small last-update-time">Esperando datos...</span>
+                                            <div class="small text-white sync-icon"><i class="fas fa-sync fa-spin"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Columna Humedad (Sala) -->
+                                <div class="col-xl-6 col-md-6">
+                                    <div class="card mb-3">
+                                        <div class="card-header py-2"><strong class="small"><i class="fas fa-tint me-1"></i> Simbología: Humedad</strong></div>
+                                        <div class="card-body">
+                                            <div class="row row-cols-1 row-cols-md-3 g-2 text-center">
+                                                <div class="col"><div class="p-2 bg-warning text-dark rounded shadow-sm"><small><strong>Seco</strong> (&lt; 30%)</small></div></div>
+                                                <div class="col"><div class="p-2 bg-success text-white rounded shadow-sm"><small><strong>Confortable</strong> (30-60%)</small></div></div>
+                                                <div class="col"><div class="p-2 bg-info text-dark rounded shadow-sm"><small><strong>Húmedo</strong> (&gt; 60%)</small></div></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="card-hum-Sensor_Sala" class="card bg-secondary text-white mb-4 shadow-lg">
+                                        <div class="card-body d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <span style="font-size: 0.9rem;">Humedad</span>
+                                                <h2 id="data-hum-Sensor_Sala" class="mt-1">---</h2>
+                                            </div>
+                                            <i class="fas fa-tint fa-2x text-white-50"></i>
+                                        </div>
+                                        <div class="card-footer d-flex align-items-center justify-content-between">
+                                            <span class="small last-update-time">Esperando datos...</span>
+                                            <div class="small text-white sync-icon"><i class="fas fa-sync fa-spin"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> 
+                        
+                        <!-- BLOQUE SENSOR 2: "Sensor_Patio" (Sin cambios) -->
+                        <div id="sensor-block-Sensor_Patio" class="sensor-view-block">
+                            
+                            <!-- Simbología de Calidad del Aire (para Patio) -->
+                            <div class="card mb-3"> 
+                                <div class="card-header py-2"> 
+                                    <strong class="small"><i class="fas fa-palette me-1"></i> Simbología: Calidad del Aire (NOM-172)</strong>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row row-cols-1 row-cols-md-3 row-cols-xl-5 g-2 text-center">
+                                        <div class="col"><div class="p-2 bg-primary text-white rounded shadow-sm"><small><strong>Buena</strong></small></div></div>
+                                        <div class="col"><div class="p-2 bg-success text-white rounded shadow-sm"><small><strong>Aceptable</strong></small></div></div>
+                                        <div class="col"><div class="p-2 bg-warning text-dark rounded shadow-sm"><small><strong>Mala</strong></small></div></div>
+                                        <div class="col"><div class="p-2 bg-danger text-white rounded shadow-sm"><small><strong>Muy Mala</strong></small></div></div>
+                                        <div class="col"><div class="p-2 bg-dark text-white rounded shadow-sm"><small><strong>Extremadamente Mala</strong></small></div></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fila de Partículas (para Patio) -->
+                            <div class="row">
+                                <!-- Tarjeta PM1 (Patio) -->
+                                <div class="col-xl-4 col-md-6">
+                                    <div id="card-pm1-Sensor_Patio" class="card bg-secondary text-white mb-4 shadow-lg">
+                                        <div class="card-body d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <span style="font-size: 0.9rem;">PM1</span>
+                                                <h2 id="data-pm1-Sensor_Patio" class="mt-1">---</h2>
+                                            </div>
+                                            <i class="fas fa-smog fa-2x text-white-50"></i>
+                                        </div>
+                                        <div class="card-footer d-flex align-items-center justify-content-between">
+                                            <span class="small last-update-time">Esperando datos...</span>
+                                            <div class="small text-white sync-icon"><i class="fas fa-sync fa-spin"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Tarjeta PM2.5 (Patio) -->
+                                <div class="col-xl-4 col-md-6">
+                                    <div id="card-pm25-Sensor_Patio" class="card bg-secondary text-white mb-4 shadow-lg">
+                                        <div class="card-body d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <span style="font-size: 0.9rem;">PM2.5</span>
+                                                <h2 id="data-pm25-Sensor_Patio" class="mt-1">---</h2>
+                                            </div>
+                                            <i class="fas fa-smog fa-2x text-white-50"></i>
+                                        </div>
+                                        <div class="card-footer d-flex align-items-center justify-content-between">
+                                            <span class="small last-update-time">Esperando datos...</span>
+                                            <div class="small text-white sync-icon"><i class="fas fa-sync fa-spin"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Tarjeta PM10 (Patio) -->
+                                <div class="col-xl-4 col-md-6">
+                                    <div id="card-pm10-Sensor_Patio" class="card bg-secondary text-white mb-4 shadow-lg">
+                                        <div class="card-body d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <span style="font-size: 0.9rem;">PM10</span>
+                                                <h2 id="data-pm10-Sensor_Patio" class="mt-1">---</h2>
+                                            </div>
+                                            <i class="fas fa-smog fa-2x text-white-50"></i>
+                                        </div>
+                                        <div class="card-footer d-flex align-items-center justify-content-between">
+                                            <span class="small last-update-time">Esperando datos...</span>
+                                            <div class="small text-white sync-icon"><i class="fas fa-sync fa-spin"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+
+                            <!-- Fila Ambientales (para Patio) -->
+                            <div class="row">
+                                <!-- Columna Temperatura (Patio) -->
+                                <div class="col-xl-6 col-md-6">
+                                    <div class="card mb-3">
+                                        <div class="card-header py-2"><strong class="small"><i class="fas fa-thermometer-half me-1"></i> Simbología: Temperatura</strong></div>
+                                        <div class="card-body">
+                                            <div class="row row-cols-1 row-cols-md-3 g-2 text-center">
+                                                <div class="col"><div class="p-2 bg-info text-dark rounded shadow-sm"><small><strong>Frío</strong> (&lt; 18°C)</small></div></div>
+                                                <div class="col"><div class="p-2 bg-success text-white rounded shadow-sm"><small><strong>Cálido</strong> (18-29°C)</small></div></div>
+                                                <div class="col"><div class="p-2 bg-danger text-white rounded shadow-sm"><small><strong>Calor</strong> (&gt; 29°C)</small></div></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="card-temp-Sensor_Patio" class="card bg-secondary text-white mb-4 shadow-lg">
+                                        <div class="card-body d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <span style="font-size: 0.9rem;">Temperatura</span>
+                                                <h2 id="data-temp-Sensor_Patio" class="mt-1">---</h2>
+                                            </div>
+                                            <i class="fas fa-thermometer-half fa-2x text-white-50"></i>
+                                        </div>
+                                        <div class="card-footer d-flex align-items-center justify-content-between">
+                                            <span class="small last-update-time">Esperando datos...</span>
+                                            <div class="small text-white sync-icon"><i class="fas fa-sync fa-spin"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Columna Humedad (Patio) -->
+                                <div class="col-xl-6 col-md-6">
+                                    <div class="card mb-3">
+                                        <div class="card-header py-2"><strong class="small"><i class="fas fa-tint me-1"></i> Simbología: Humedad</strong></div>
+                                        <div class="card-body">
+                                            <div class="row row-cols-1 row-cols-md-3 g-2 text-center">
+                                                <div class="col"><div class="p-2 bg-warning text-dark rounded shadow-sm"><small><strong>Seco</strong> (&lt; 30%)</small></div></div>
+                                                <div class="col"><div class="p-2 bg-success text-white rounded shadow-sm"><small><strong>Confortable</strong> (30-60%)</small></div></div>
+                                                <div class="col"><div class="p-2 bg-info text-dark rounded shadow-sm"><small><strong>Húmedo</strong> (&gt; 60%)</small></div></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="card-hum-Sensor_Patio" class="card bg-secondary text-white mb-4 shadow-lg">
+                                        <div class="card-body d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <span style="font-size: 0.9rem;">Humedad</span>
+                                                <h2 id="data-hum-Sensor_Patio" class="mt-1">---</h2>
+                                            </div>
+                                            <i class="fas fa-tint fa-2x text-white-50"></i>
+                                        </div>
+                                        <div class="card-footer d-flex align-items-center justify-content-between">
+                                            <span class="small last-update-time">Esperando datos...</span>
+                                            <div class="small text-white sync-icon"><i class="fas fa-sync fa-spin"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> 
+                        
+                    </div>
+                </main>
+                <footer class="py-4 bg-light mt-auto">
+                    <div class="container-fluid px-4">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted">Copyright &copy; Monitor de Calidad del Aire 2025</div>
+                            <div>
+                                <a href="#">Política de Privacidad</a>
+                                &middot;
+                                <a href="#">Términos &amp; Condiciones</a>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script src="js/scripts.js"></script>
+        
+        <!-- ============================================== -->
+        <!-- === SCRIPT DE WEBSOCKET (CORREGIDO Y COMPLETO) === -->
+        <!-- ============================================== -->
+        <script>
+            // Variable global para la función connectWebSocket
+            let connectWebSocket; 
+
+            document.addEventListener('DOMContentLoaded', (event) => {
+                
+                function updateCardColor(cardElement, value, metricType) {
+                    const colorClasses = ['bg-dark', 'bg-primary', 'bg-warning', 'bg-info', 'bg-secondary', 'bg-success', 'bg-danger'];
+                    cardElement.classList.remove(...colorClasses);
+                    let newColor = 'bg-secondary'; 
+                    switch (metricType) {
+                        case 'pm1':
+                        case 'pm25': 
+                            if (value <= 25) newColor = 'bg-primary';      
+                            else if (value <= 45) newColor = 'bg-success';  
+                            else if (value <= 79) newColor = 'bg-warning';  
+                            else if (value <= 147) newColor = 'bg-danger';   
+                            else newColor = 'bg-dark';         
+                            break;
+                        case 'pm10': 
+                            if (value <= 50) newColor = 'bg-primary';       
+                            else if (value <= 75) newColor = 'bg-success';   
+                            else if (value <= 155) newColor = 'bg-warning';  
+                            else if (value <= 235) newColor = 'bg-danger';   
+                            else newColor = 'bg-dark';         
+                            break;
+                        case 'temp': 
+                            if (value < 18) newColor = 'bg-info';         
+                            else if (value <= 29) newColor = 'bg-success';    
+                            else newColor = 'bg-danger';        
+                            break;
+                        case 'hum': 
+                            if (value < 30) newColor = 'bg-warning';      
+                            else if (value <= 60) newColor = 'bg-success';    
+                            else newColor = 'bg-info';        
+                            break;
+                    }
+                    cardElement.classList.add(newColor);
+                }
+                function updateSensorData(nodeID, data) {
+                    const sensorBlock = document.getElementById('sensor-block-' + nodeID);
+                    if (!sensorBlock) {
+                        console.warn("Se recibieron datos para un nodo desconocido:", nodeID);
+                        return;
+                    }
+                    const pm1Element = sensorBlock.querySelector('#data-pm1-' + nodeID);
+                    const pm25Element = sensorBlock.querySelector('#data-pm25-' + nodeID);
+                    const pm10Element = sensorBlock.querySelector('#data-pm10-' + nodeID);
+                    const tempElement = sensorBlock.querySelector('#data-temp-' + nodeID);
+                    const humElement = sensorBlock.querySelector('#data-hum-' + nodeID);
+                    const pm1Card = sensorBlock.querySelector('#card-pm1-' + nodeID);
+                    const pm25Card = sensorBlock.querySelector('#card-pm25-' + nodeID);
+                    const pm10Card = sensorBlock.querySelector('#card-pm10-' + nodeID);
+                    const tempCard = sensorBlock.querySelector('#card-temp-' + nodeID); 
+                    const humCard = sensorBlock.querySelector('#card-hum-' + nodeID);
+                    const updateTimeElements = sensorBlock.querySelectorAll('.last-update-time');
+                    const syncIconElements = sensorBlock.querySelectorAll('.sync-icon');
+                    const fechaUTC = new Date(data.timestamp);
+                    const horaLocal = fechaUTC.toLocaleString('es-MX', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: true 
+                    });
+                    pm1Element.textContent = (data.pm1 || 0).toFixed(2) + ' µg/m³';
+                    pm25Element.textContent = (data.pm25 || 0).toFixed(2) + ' µg/m³';
+                    pm10Element.textContent = (data.pm10 || 0).toFixed(2) + ' µg/m³';
+                    tempElement.textContent = (data.temp || 0).toFixed(1) + ' °C';
+                    humElement.textContent = (data.hum || 0).toFixed(1) + ' %';
+                    updateTimeElements.forEach(el => el.textContent = 'Actualizado: ' + horaLocal);
+                    updateCardColor(pm1Card, data.pm1, 'pm1');
+                    updateCardColor(pm25Card, data.pm25, 'pm25');
+                    updateCardColor(pm10Card, data.pm10, 'pm10');
+                    updateCardColor(tempCard, data.temp, 'temp');
+                    updateCardColor(humCard, data.hum, 'hum');
+                    syncIconElements.forEach(el => el.innerHTML = '<i class="fas fa-rss"></i>');
+                    setTimeout(() => {
+                        syncIconElements.forEach(el => el.innerHTML = '<i class="fas fa-check"></i>');
+                    }, 500); 
+                }
+                
+                // --- MODIFICADO: Definimos la función global ---
+                connectWebSocket = function() {
+                    const ws = new WebSocket('ws://localhost:8080');
+                    ws.onopen = () => {
+                        console.log('Conectado al servidor WebSocket 🚀');
+                        document.querySelectorAll('.last-update-time').forEach(el => el.textContent = 'Conectado. Esperando...');
+                        document.querySelectorAll('.sync-icon').forEach(el => el.innerHTML = '<i class="fas fa-check"></i>');
+                    };
+                    ws.onmessage = (event) => {
+                        try {
+                            const data = JSON.parse(event.data);
+                            if (!data.nodeID) {
+                                console.error("Error: Dato recibido sin nodeID", data);
+                                return;
+                            }
+                            updateSensorData(data.nodeID, data);
+                        } catch (e) {
+                            console.error('Error al parsear el JSON:', e);
+                        }
+                    };
+                    ws.onclose = () => {
+                        console.log('Desconectado. Intentando reconectar...');
+                        document.querySelectorAll('.last-update-time').forEach(el => el.textContent = 'Reconectando...');
+                        document.querySelectorAll('.sync-icon').forEach(el => el.innerHTML = '<i class="fas fa-times"></i>');
+                        setTimeout(connectWebSocket, 3000); 
+                    };
+                    ws.onerror = (error) => {
+                        console.error('Error de WebSocket:', error);
+                        document.querySelectorAll('.last-update-time').forEach(el => el.textContent = 'Error de conexión.');
+                        document.querySelectorAll('.sync-icon').forEach(el => el.innerHTML = '<i class="fas fa-times"></i>');
+                        ws.close(); 
+                    };
+                }
+
+                // Event Listener del Selector (SIN CAMBIOS)
+                const zoneSelector = document.getElementById('zoneSelector');
+                zoneSelector.addEventListener('change', (e) => {
+                    const selectedZoneID = e.target.value;
+                    const allSensorBlocks = document.querySelectorAll('.sensor-view-block');
+                    allSensorBlocks.forEach(block => {
+                        block.classList.remove('is-visible');
+                    });
+                    const selectedBlock = document.getElementById('sensor-block-' + selectedZoneID);
+                    if (selectedBlock) {
+                        selectedBlock.classList.add('is-visible');
+                    }
+                });
+                
+            });
+        </script>
+
+        <!-- ============================================== -->
+        <!-- === AÑADIDO: Script de Sesión y Logout === -->
+        <!-- ============================================== -->
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                
+                // 1. Revisar si el usuario ha iniciado sesión
+                const userEmail = sessionStorage.getItem('currentUserEmail');
+
+                if (!userEmail) {
+                    // Si no hay email, significa que no ha iniciado sesión.
+                    // ¡Lo botamos al login!
+                    alert('Por favor, inicia sesión para continuar.');
+                    window.location.href = 'login.html';
+                } else {
+                    // 2. Si SÍ ha iniciado sesión, mostramos su email
+                    document.getElementById('userEmailDisplay').textContent = userEmail;
+                    document.getElementById('userEmailSidenav').textContent = userEmail;
+
+                    // 3. ¡Iniciamos la conexión WebSocket SÓLO SI el login es válido!
+                    // (Llamamos a la función que está en el script de arriba)
+                    connectWebSocket();
+                }
+
+                // 4. Configurar el botón de "Cerrar Sesión"
+                const logoutButton = document.getElementById('logoutButton');
+                logoutButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    // Limpiar la sesión
+                    sessionStorage.removeItem('currentUserEmail');
+                    
+                    // Redirigir al login
+                    alert('Has cerrado sesión.');
+                    window.location.href = 'login.html';
+                });
+
+            });
+        </script>
+        
+    </body>
+</html>
+

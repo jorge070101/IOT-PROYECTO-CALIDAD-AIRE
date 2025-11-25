@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Registro - Monitor de Aire</title>
+        <link href="css/styles.css" rel="stylesheet" />
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    </head>
+    <body class="bg-primary">
+        <div id="layoutAuthentication">
+            <div id="layoutAuthentication_content">
+                <main>
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-7">
+                                <div class="card shadow-lg border-0 rounded-lg mt-5">
+                                    <div class="card-header"><h3 class="text-center font-weight-light my-4">Crear Cuenta</h3></div>
+                                    <div class="card-body">
+                                        <!-- ============================================== -->
+                                        <!-- === MODIFICADO: Añadido ID al formulario === -->
+                                        <!-- ============================================== -->
+                                        <form id="register-form">
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <div class="form-floating mb-3 mb-md-0">
+                                                        <input class="form-control" id="inputFirstName" type="text" placeholder="Enter your first name" required />
+                                                        <label for="inputFirstName">Nombre(s)</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-floating">
+                                                        <input class="form-control" id="inputLastName" type="text" placeholder="Enter your last name" required />
+                                                        <label for="inputLastName">Apellidos</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-floating mb-3">
+                                                <input class="form-control" id="inputEmail" type="email" placeholder="name@example.com" required />
+                                                <label for="inputEmail">Correo Electrónico</label>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <div class="form-floating mb-3 mb-md-0">
+                                                        <input class="form-control" id="inputPassword" type="password" placeholder="Create a password" required />
+                                                        <label for="inputPassword">Contraseña</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-floating mb-3 mb-md-0">
+                                                        <input class="form-control" id="inputPasswordConfirm" type="password" placeholder="Confirm password" required />
+                                                        <label for="inputPasswordConfirm">Confirmar Contraseña</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Mensaje de Error (oculto al inicio) -->
+                                            <div id="error-message" class="alert alert-danger" style="display: none;" role="alert">
+                                                <!-- El mensaje de error se insertará aquí -->
+                                            </div>
+
+                                            <div class="mt-4 mb-0">
+                                                <!-- ============================================== -->
+                                                <!-- === MODIFICADO: Botón de 'a' a 'button' === -->
+                                                <!-- ============================================== -->
+                                                <div class="d-grid">
+                                                    <button type="submit" class="btn btn-primary btn-block">Crear Cuenta</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="card-footer text-center py-3">
+                                        <div class="small"><a href="login.html">¿Ya tienes cuenta? Inicia sesión</a></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+            <div id="layoutAuthentication_footer">
+                <footer class="py-4 bg-light mt-auto">
+                    <div class="container-fluid px-4">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted">Copyright &copy; Monitor de Calidad del Aire 2025</div>
+                            <div>
+                                <a href="#">Política de Privacidad</a>
+                                &middot;
+                                <a href="#">Términos &amp; Condiciones</a>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script src="js/scripts.js"></script>
+
+        <!-- ============================================== -->
+        <!-- === AÑADIDO: Script para manejar el registro === -->
+        <!-- ============================================== -->
+        <script>
+            document.getElementById('register-form').addEventListener('submit', async function(e) {
+                e.preventDefault(); // Evitar que el formulario se envíe de la forma tradicional
+
+                // 1. Obtener los valores
+                const firstName = document.getElementById('inputFirstName').value;
+                const lastName = document.getElementById('inputLastName').value;
+                const email = document.getElementById('inputEmail').value;
+                const password = document.getElementById('inputPassword').value;
+                const passwordConfirm = document.getElementById('inputPasswordConfirm').value;
+                
+                const errorMessageElement = document.getElementById('error-message');
+
+                // 2. Validar que las contraseñas coincidan
+                if (password !== passwordConfirm) {
+                    errorMessageElement.textContent = "Las contraseñas no coinciden.";
+                    errorMessageElement.style.display = 'block';
+                    return;
+                }
+
+                // 3. Crear el "cuerpo" de la petición
+                const body = JSON.stringify({
+                    firstName,
+                    lastName,
+                    email,
+                    password
+                });
+
+                try {
+                    // 4. Enviar los datos al servidor
+                    const response = await fetch('/api/auth/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: body
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        // 5. ¡Éxito! Redirigir al login
+                        alert('¡Registro exitoso! Ahora puedes iniciar sesión.');
+                        window.location.href = 'login.html';
+                    } else {
+                        // 6. Mostrar error del servidor (ej. "email ya existe")
+                        errorMessageElement.textContent = data.message || 'Error en el registro.';
+                        errorMessageElement.style.display = 'block';
+                    }
+
+                } catch (error) {
+                    console.error('Error de red:', error);
+                    errorMessageElement.textContent = 'Error de conexión. Inténtalo de nuevo.';
+                    errorMessageElement.style.display = 'block';
+                }
+            });
+        </script>
+
+    </body>
+</html>

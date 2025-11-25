@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="Estadísticas Históricas del Monitor de Calidad del Aire" />
+        <meta name="author" content="" />
+        <title>Estadísticas - Monitor de Aire</title>
+        <link href="css/styles.css" rel="stylesheet" />
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+
+        <!-- Estilos para la transición de carga (Sin cambios) -->
+        <style>
+            .chart-card {
+                transition: opacity 1.0s ease-in-out, transform 1.0s ease-in-out;
+                transform: scale(1.0); 
+            }
+            .chart-card.is-loading {
+                opacity: 0.2;
+                transform: scale(0.98); 
+            }
+            .legend-item {
+                display: flex;
+                align-items: center;
+                margin-bottom: 4px;
+            }
+            .legend-color-box {
+                width: 20px;
+                height: 20px;
+                margin-right: 8px;
+                border-radius: 4px;
+                flex-shrink: 0; 
+            }
+            .legend-label {
+                font-size: 0.85rem;
+                font-weight: 500;
+            }
+        </style>
+
+    </head>
+    <body class="sb-nav-fixed">
+        <!-- ============================================== -->
+        <!-- === MODIFICADO: Navbar con menú de usuario === -->
+        <!-- ============================================== -->
+        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+            <a class="navbar-brand ps-3" href="index.html">Monitor de Aire</a>
+            <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+            <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+            </form>
+            <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user fa-fw me-1"></i>
+                        <span id="userEmailDisplay">Usuario</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" id="logoutButton" href="#!">Cerrar Sesión</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        <div id="layoutSidenav">
+            <!-- ============================================== -->
+            <!-- === MODIFICADO: Menú lateral con usuario === -->
+            <!-- ============================================== -->
+            <div id="layoutSidenav_nav">
+                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                    <div class="sb-sidenav-menu">
+                        <div class="nav">
+                            <div class="sb-sidenav-menu-heading">Principal</div>
+                            <a class="nav-link" href="index.html">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Dashboard
+                            </a>
+                            <div class="sb-sidenav-menu-heading">Complementos</div>
+                            <a class="nav-link" href="charts.html">
+                                <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                                Gráficas
+                            </a>
+                            <a class="nav-link" href="tables.html">
+                                <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                                Tablas Históricas
+                            </a>
+                        </div>
+                    </div>
+                    <div class="sb-sidenav-footer">
+                        <div class="small">Conectado como:</div>
+                        <span id="userEmailSidenav">Cargando...</span>
+                    </div>
+                </nav>
+            </div>
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid px-4">
+                        <h1 class="mt-4">Estadísticas Históricas</h1>
+                        <ol class="breadcrumb mb-4">
+                            <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+                            <li class="breadcrumb-item active">Gráficas</li>
+                        </ol>
+                        
+                        <!-- Selector de Zona (Sin cambios) -->
+                        <div class="mb-4">
+                            <label for="zoneSelector" class="form-label"><strong>Seleccionar Estación:</strong></label>
+                            <select class="form-select" id="zoneSelector">
+                                <option value="Sensor_Sala" selected>Estación: Sensor Sala</option>
+                                <option value="Sensor_Patio">Estación: Sensor Patio</option>
+                            </select>
+                        </div>
+
+                        <!-- ============================================== -->
+                        <!-- === Simbologías (Corregidas con <p>) === -->
+                        <!-- ============================================== -->
+                        <div class="row">
+                            <!-- Columna PM1 -->
+                            <div class="col-xl-4 col-lg-6">
+                                <div class="card mb-4">
+                                    <div class="card-header py-2"><strong class="small"><i class="fas fa-palette me-1"></i> Simbología: PM1</strong> (ref. PM2.5)</div>
+                                    <div class="card-body" style="padding: 1rem;">
+                                        <div class="legend-item"><div class="legend-color-box bg-primary"></div><span class="legend-label">Buena (0-25 µg/m³)</span></div>
+                                        <div class="legend-item"><div class="legend-color-box bg-success"></div><span class="legend-label">Aceptable (26-45 µg/m³)</span></div>
+                                        <div class="legend-item"><div class="legend-color-box bg-warning"></div><span class="legend-label">Mala (46-79 µg/m³)</span></div>
+                                        <div class="legend-item"><div class="legend-color-box bg-danger"></div><span class="legend-label">Muy Mala (80-147 µg/m³)</span></div>
+                                        <div class="legend-item"><div class="legend-color-box bg-dark"></div><p class="legend-label m-0" style="color: rgb(0, 0, 0) !important;">Extrem. Mala (&gt;147 µg/m³)</p></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Columna PM2.5 (Rangos Oficiales) -->
+                            <div class="col-xl-4 col-lg-6">
+                                <div class="card mb-4">
+                                    <div class="card-header py-2"><strong class="small"><i class="fas fa-palette me-1"></i> Simbología: PM2.5</strong> (NOM-172)</div>
+                                    <div class="card-body" style="padding: 1rem;">
+                                        <div class="legend-item"><div class="legend-color-box bg-primary"></div><span class="legend-label">Buena (0-25 µg/m³)</span></div>
+                                        <div class="legend-item"><div class="legend-color-box bg-success"></div><span class="legend-label">Aceptable (26-45 µg/m³)</span></div>
+                                        <div class="legend-item"><div class="legend-color-box bg-warning"></div><span class="legend-label">Mala (46-79 µg/m³)</span></div>
+                                        <div class="legend-item"><div class="legend-color-box bg-danger"></div><span class="legend-label">Muy Mala (80-147 µg/m³)</span></div>
+                                        <div class="legend-item"><div class="legend-color-box bg-dark"></div><p class="legend-label m-0" style="color: rgb(0, 0, 0) !important;">Extrem. Mala (&gt;147 µg/m³)</p></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Columna PM10 (Rangos Oficiales) -->
+                            <div class="col-xl-4 col-lg-12">
+                                <div class="card mb-4">
+                                    <div class="card-header py-2"><strong class="small"><i class="fas fa-palette me-1"></i> Simbología: PM10</strong> (NOM-172)</div>
+                                    <div class="card-body" style="padding: 1rem;">
+                                        <div class="legend-item"><div class="legend-color-box bg-primary"></div><span class="legend-label">Buena (0-50 µg/m³)</span></div>
+                                        <div class="legend-item"><div class="legend-color-box bg-success"></div><span class="legend-label">Aceptable (51-75 µg/m³)</span></div>
+                                        <div class="legend-item"><div class="legend-color-box bg-warning"></div><span class="legend-label">Mala (76-155 µg/m³)</span></div>
+                                        <div class="legend-item"><div class="legend-color-box bg-danger"></div><span class="legend-label">Muy Mala (156-235 µg/m³)</span></div>
+                                        <div class="legend-item"><div class="legend-color-box bg-dark"></div><p class="legend-label m-0" style="color: rgb(0, 0, 0) !important;">Extrem. Mala (&gt;235 µg/m³)</p></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- ============================================== -->
+                        <!-- === FIN DE LA SIMBOLOGÍA === -->
+                        <!-- ============================================== -->
+
+
+                        <!-- Gráfico de Partículas (PM) (Sin cambios) -->
+                        <div class="card mb-4 chart-card">
+                            <div class="card-header">
+                                <i class="fas fa-chart-area me-1"></i>
+                                Historial de Partículas (Últimos 20 registros)
+                            </div>
+                            <div class="card-body"><canvas id="pmChart" width="100%" height="30"></canvas></div>
+                            <div id="pmChartFooter" class="card-footer small text-muted">Cargando datos...</div>
+                        </div>
+
+                        <!-- Gráfico Ambiental (Temp/Hum) (Sin cambios) -->
+                        <div class="card mb-4 chart-card">
+                            <div class="card-header">
+                                <i class="fas fa-chart-area me-1"></i>
+                                Historial Ambiental (Últimos 20 registros)
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="text-center small text-muted"><i class="fas fa-thermometer-half me-1"></i> Temperatura (°C)</div>
+                                        <canvas id="tempChart" width="100%" height="50"></canvas>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="text-center small text-muted"><i class="fas fa-tint me-1"></i> Humedad (%)</div>
+                                        <canvas id="humChart" width="100%" height="50"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="envChartsFooter" class="card-footer small text-muted">Cargando datos...</div>
+                        </div>
+                        
+                    </div>
+                </main>
+                <footer class="py-4 bg-light mt-auto">
+                    <div class="container-fluid px-4">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted">Copyright &copy; Monitor de Calidad del Aire 2025</div>
+                            <div>
+                                <a href="#">Política de Privacidad</a>
+                                &middot;
+                                <a href="#">Términos &amp; Condiciones</a>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script src="js/scripts.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+        
+        <!-- ============================================== -->
+        <!-- === SCRIPT DE GRÁFICOS (CON PROTECCIÓN DE SESIÓN) === -->
+        <!-- ============================================== -->
+        <script>
+            // Función de retraso (delay)
+            function sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+
+                // ==============================================
+                // === AÑADIDO: Lógica de Sesión y Logout ===
+                // ==============================================
+                
+                // 1. Revisar si el usuario ha iniciado sesión
+                const userEmail = sessionStorage.getItem('currentUserEmail');
+
+                if (!userEmail) {
+                    // Si no hay email, ¡lo botamos al login!
+                    alert('Por favor, inicia sesión para continuar.');
+                    window.location.href = 'login.html';
+                    return; // Detener la ejecución del script
+                } 
+                
+                // 2. Si SÍ ha iniciado sesión, mostramos su email
+                document.getElementById('userEmailDisplay').textContent = userEmail;
+                document.getElementById('userEmailSidenav').textContent = userEmail;
+
+                // 3. Configurar el botón de "Cerrar Sesión"
+                const logoutButton = document.getElementById('logoutButton');
+                logoutButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    sessionStorage.removeItem('currentUserEmail');
+                    alert('Has cerrado sesión.');
+                    window.location.href = 'login.html';
+                });
+                
+                // ==============================================
+                // === FIN: Lógica de Sesión y Logout ===
+                // ==============================================
+
+                // --- El resto del script de gráficos continúa ---
+
+                let pmChartInstance = null;
+                let tempChartInstance = null; 
+                let humChartInstance = null;  
+
+                const zoneSelector = document.getElementById('zoneSelector');
+                
+                const pmChartCard = document.getElementById('pmChart').closest('.card');
+                const envChartsCard = document.getElementById('tempChart').closest('.card'); 
+
+                // El código se ejecuta solo si el login fue exitoso
+                initializeCharts();
+                fetchData(zoneSelector.value);
+
+                zoneSelector.addEventListener('change', (e) => {
+                    fetchData(e.target.value);
+                });
+
+                // --- Función 1: Inicializar Gráficos --- (Sin cambios)
+                function initializeCharts() {
+                    const optionsWithLegend = {
+                        animation: { duration: 800, easing: 'easeInOutQuad' },
+                        scales: {
+                            xAxes: [{ time: { unit: 'string' }, gridLines: { display: false }, ticks: { maxTicksLimit: 10 } }],
+                            yAxes: [{ ticks: { beginAtZero: true }, gridLines: { color: "rgba(0, 0, 0, .125)" } }],
+                        },
+                        legend: { display: true } 
+                    };
+                    const optionsNoLegend = {
+                        animation: { duration: 800, easing: 'easeInOutQuad' },
+                        scales: {
+                            xAxes: [{ time: { unit: 'string' }, gridLines: { display: false }, ticks: { maxTicksLimit: 10 } }],
+                            yAxes: [{ ticks: { beginAtZero: true }, gridLines: { color: "rgba(0, 0, 0, .125)" } }],
+                        },
+                        legend: { display: false } 
+                    };
+                    const pmCtx = document.getElementById('pmChart').getContext('2d');
+                    pmChartInstance = new Chart(pmCtx, {
+                        type: 'line',
+                        data: {
+                            labels: [], 
+                            datasets: [
+                                { label: "PM1", borderColor: "rgba(100,100,255,1)", backgroundColor: "rgba(100,100,255,0.2)", data: [] },
+                                { label: "PM2.5", borderColor: "rgba(255,159,64,1)", backgroundColor: "rgba(255,159,64,0.2)", data: [] },
+                                { label: "PM10", borderColor: "rgba(255,99,132,1)", backgroundColor: "rgba(255,99,132,0.2)", data: [] }
+                            ]
+                        },
+                        options: optionsWithLegend 
+                    });
+                    const tempCtx = document.getElementById('tempChart').getContext('2d');
+                    tempChartInstance = new Chart(tempCtx, {
+                        type: 'line',
+                        data: {
+                            labels: [], 
+                            datasets: [
+                                { label: "Temperatura (°C)", borderColor: "rgba(255, 60, 60, 1)", backgroundColor: "rgba(255, 60, 60, 0.2)", data: [] }
+                            ]
+                        },
+                        options: optionsNoLegend 
+                    });
+                    const humCtx = document.getElementById('humChart').getContext('2d');
+                    humChartInstance = new Chart(humCtx, {
+                        type: 'line',
+                        data: {
+                            labels: [], 
+                            datasets: [
+                                { label: "Humedad (%)", borderColor: "rgba(54, 162, 235, 1)", backgroundColor: "rgba(54, 162, 235, 0.2)", data: [] }
+                            ]
+                        },
+                        options: optionsNoLegend 
+                    });
+                }
+
+                // --- Función 2: Obtener y Procesar Datos --- (Con retraso)
+                async function fetchData(nodeID) {
+                    console.log(`Obteniendo datos para: ${nodeID}`);
+                    
+                    pmChartCard.classList.add('is-loading');
+                    envChartsCard.classList.add('is-loading'); 
+
+                    document.getElementById('pmChartFooter').textContent = `Cargando datos para ${nodeID}...`;
+                    document.getElementById('envChartsFooter').textContent = `Cargando datos para ${nodeID}...`;
+                    
+                    await sleep(500); // Retraso artificial
+
+                    try {
+                        const response = await fetch(`/api/data/${nodeID}`);
+                        if (!response.ok) {
+                            throw new Error('Error al obtener los datos de la API');
+                        }
+                        
+                        let data = await response.json();
+                        data.reverse(); 
+
+                        const labels = [];
+                        const pm1Data = [];
+                        const pm25Data = [];
+                        const pm10Data = [];
+                        const tempData = [];
+                        const humData = [];
+
+                        data.forEach(item => {
+                            const date = new Date(item.timestamp);
+                            const label = date.toLocaleTimeString('es-MX', { hour: '2-digit', minute:'2-digit' });
+                            labels.push(label);
+                            pm1Data.push(item.pm1);
+                            pm25Data.push(item.pm25);
+                            pm10Data.push(item.pm10);
+                            tempData.push(item.temp);
+                            humData.push(item.hum);
+                        });
+
+                        updateChart(pmChartInstance, labels, [pm1Data, pm25Data, pm10Data]);
+                        updateChart(tempChartInstance, labels, [tempData]); 
+                        updateChart(humChartInstance, labels, [humData]);   
+
+                        if (data.length > 0) {
+                            const lastUpdate = new Date(data[data.length - 1].timestamp).toLocaleString('es-MX');
+                            document.getElementById('pmChartFooter').textContent = `Última actualización (${nodeID}): ${lastUpdate}`;
+                            document.getElementById('envChartsFooter').textContent = `Última actualización (${nodeID}): ${lastUpdate}`;
+                        } else {
+                            document.getElementById('pmChartFooter').textContent = `No hay datos históricos para ${nodeID}.`;
+                            document.getElementById('envChartsFooter').textContent = `No hay datos históricos para ${nodeID}.`;
+                        }
+
+                    } catch (error) {
+                        console.error(error);
+                        document.getElementById('pmChartFooter').textContent = 'Error al cargar los datos.';
+                        document.getElementById('envChartsFooter').textContent = 'Error al cargar los datos.';
+                    } finally {
+                        pmChartCard.classList.remove('is-loading');
+                        envChartsCard.classList.remove('is-loading');
+                    }
+                }
+
+                // --- Función 3: Actualizar un Gráfico --- (Sin cambios)
+                function updateChart(chart, labels, datasetsData) {
+                    chart.data.labels = labels;
+                    datasetsData.forEach((data, index) => {
+                        chart.data.datasets[index].data = data;
+                    });
+                    chart.update();
+                }
+
+            });
+        </script>
+        
+    </body>
+</html>
+

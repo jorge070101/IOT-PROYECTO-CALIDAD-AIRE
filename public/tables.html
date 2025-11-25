@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="Tablas de datos históricos" />
+        <meta name="author" content="" />
+        <!-- Título modificado -->
+        <title>Tablas - Monitor de Aire</title>
+        <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+        <link href="css/styles.css" rel="stylesheet" />
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    </head>
+    <body class="sb-nav-fixed">
+        <!-- ============================================== -->
+        <!-- === MODIFICADO: Navbar con menú de usuario === -->
+        <!-- ============================================== -->
+        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+            <a class="navbar-brand ps-3" href="index.html">Monitor de Aire</a>
+            <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+            <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+            </form>
+            <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user fa-fw me-1"></i>
+                        <span id="userEmailDisplay">Usuario</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" id="logoutButton" href="#!">Cerrar Sesión</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        <div id="layoutSidenav">
+            <!-- ============================================== -->
+            <!-- === MODIFICADO: Menú lateral con usuario === -->
+            <!-- ============================================== -->
+            <div id="layoutSidenav_nav">
+                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                    <div class="sb-sidenav-menu">
+                        <div class="nav">
+                            <div class="sb-sidenav-menu-heading">Principal</div>
+                            <a class="nav-link" href="index.html">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Dashboard
+                            </a>
+                            <div class="sb-sidenav-menu-heading">Complementos</div>
+                            <a class="nav-link" href="charts.html">
+                                <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                                Gráficas
+                            </a>
+                            <a class="nav-link" href="tables.html">
+                                <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                                Tablas Históricas
+                            </a>
+                        </div>
+                    </div>
+                    <div class="sb-sidenav-footer">
+                        <div class="small">Conectado como:</div>
+                        <span id="userEmailSidenav">Cargando...</span>
+                    </div>
+                </nav>
+            </div>
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid px-4">
+                        <h1 class="mt-4">Tablas Históricas</h1>
+                        <ol class="breadcrumb mb-4">
+                            <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+                            <li class="breadcrumb-item active">Tablas</li>
+                        </ol>
+                        
+                        <!-- ============================================== -->
+                        <!-- === Controles de Filtro y Descarga === -->
+                        <!-- ============================================== -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-filter me-1"></i>
+                                Filtros y Descarga
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3 align-items-end">
+                                    <!-- Selector de Zona -->
+                                    <div class="col-md-4">
+                                        <label for="zoneSelector" class="form-label"><strong>Estación:</strong></label>
+                                        <select class="form-select" id="zoneSelector">
+                                            <option value="Sensor_Sala" selected>Estación: Sensor Sala</option>
+                                            <option value="Sensor_Patio">Estación: Sensor Patio</option>
+                                        </select>
+                                    </div>
+                                    <!-- Descarga Rápida -->
+                                    <div class="col-md-4">
+                                        <label class="form-label"><strong>Descarga Rápida:</strong></label>
+                                        <button class="btn btn-secondary w-100" id="downloadTodayButton" type="button">
+                                            <i class="fas fa-calendar-day me-1"></i>
+                                            Descargar Datos de Hoy
+                                        </button>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <!-- Botón para la tabla -->
+                                        <label class="form-label"><strong>Vista de Tabla:</strong></label>
+                                        <button class="btn btn-info w-100 text-white" id="viewLast20Button" type="button">
+                                            <i class="fas fa-eye me-1"></i>
+                                            Ver Últimos 20 Registros
+                                        </button>
+                                    </div>
+
+                                    <!-- Filtro por Rango -->
+                                    <div class="col-12"><hr class="my-3"></div>
+
+                                    <div class="col-md-4">
+                                        <label for="dateStart" class="form-label"><strong>Fecha de Inicio:</strong></label>
+                                        <input type="date" class="form-control" id="dateStart">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="dateEnd" class="form-label"><strong>Fecha de Fin:</strong></label>
+                                        <input type="date" class="form-control" id="dateEnd">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-primary w-100" id="downloadRangeButton" type="button">
+                                            <i class="fas fa-download me-1"></i>
+                                            Descargar por Rango
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ============================================== -->
+                        <!-- === Tabla de Datos (se actualiza) === -->
+                        <!-- ============================================== -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-table me-1"></i>
+                                <span id="tableTitle">Registros de la Base de Datos</span>
+                            </div>
+                            <div class="card-body">
+                                <table id="datatablesSimple">
+                                    <thead>
+                                        <tr>
+                                            <th>Estación</th>
+                                            <th>Fecha/Hora</th>
+                                            <th>PM1</th>
+                                            <th>PM2.5</th>
+                                            <th>PM10</th>
+                                            <th>Temp. (°C)</th>
+                                            <th>Hum. (%)</th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Estación</th>
+                                            <th>Fecha/Hora</th>
+                                            <th>PM1L</th>
+                                            <th>PM2.5</th>
+                                            <th>PM10</th>
+                                            <th>Temp. (°C)</th>
+                                            <th>Hum. (%)</th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody id="tableBody">
+                                        <!-- Los datos se cargarán aquí -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                <footer class="py-4 bg-light mt-auto">
+                    <div class="container-fluid px-4">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted">Copyright &copy; Monitor de Calidad del Aire 2025</div>
+                            <div>
+                                <a href="#">Política de Privacidad</a>
+                                &middot;
+                                <a href="#">Términos &amp; Condiciones</a>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script src="js/scripts.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
+        
+        <!-- ============================================== -->
+        <!-- === MODIFICADO: Script de Tablas (con Sesión) === -->
+        <!-- ============================================== -->
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+
+                // ==============================================
+                // === Lógica de Sesión y Logout ===
+                // ==============================================
+                
+                const userEmail = sessionStorage.getItem('currentUserEmail');
+                if (!userEmail) {
+                    alert('Por favor, inicia sesión para continuar.');
+                    window.location.href = 'login.html';
+                    return; 
+                } 
+                document.getElementById('userEmailDisplay').textContent = userEmail;
+                document.getElementById('userEmailSidenav').textContent = userEmail;
+                document.getElementById('logoutButton').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    sessionStorage.removeItem('currentUserEmail');
+                    alert('Has cerrado sesión.');
+                    window.location.href = 'login.html';
+                });
+                
+                // ==============================================
+                // === Lógica de la Tabla ===
+                // ==============================================
+
+                let dataTableInstance = null; 
+                
+                const zoneSelector = document.getElementById('zoneSelector');
+                const tableBody = document.getElementById('tableBody');
+                const tableTitle = document.getElementById('tableTitle');
+
+                const viewLast20Button = document.getElementById('viewLast20Button');
+                const downloadTodayButton = document.getElementById('downloadTodayButton');
+                const downloadRangeButton = document.getElementById('downloadRangeButton');
+
+                
+                function initializeDataTable() {
+                    if (dataTableInstance) {
+                        dataTableInstance.destroy(); 
+                    }
+                    const dataTable = new simpleDatatables.DataTable("#datatablesSimple", {
+                        searchable: true,
+                        perPage: 10,
+                    });
+                    return dataTable;
+                }
+
+                // --- Función 1: Obtener y Poblar Datos (para la tabla) ---
+                async function fetchTableData(nodeID) {
+                    console.log(`Obteniendo últimos 20 datos para: ${nodeID}`);
+                    tableTitle.textContent = `Mostrando últimos 20 registros para ${nodeID}`;
+                    tableBody.innerHTML = '<tr><td colspan="7" class="text-center">Cargando datos...</td></tr>';
+                    
+                    try {
+                        const response = await fetch(`/api/data/${nodeID}`); 
+                        if (!response.ok) throw new Error('Error al obtener los datos de la API');
+                        
+                        const data = await response.json();
+                        populateTable(data); 
+
+                    } catch (error) {
+                        console.error(error);
+                        tableBody.innerHTML = '<tr><td colspan="7" class="text-center text-danger">Error al cargar los datos.</td></tr>';
+                    }
+                }
+
+                // --- Función 2: Poblar la tabla con los datos ---
+                function populateTable(data) {
+                    tableBody.innerHTML = '';
+                    if (data.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="7" class="text-center">No hay datos históricos para esta estación.</td></tr>';
+                        return;
+                    }
+
+                    let tableHtml = '';
+                    data.forEach(item => {
+                        const date = new Date(item.timestamp).toLocaleString('es-MX', {
+                            year: 'numeric', month: '2-digit', day: '2-digit',
+                            hour: '2-digit', minute: '2-digit'
+                        });
+                        tableHtml += `
+                            <tr>
+                                <td>${item.nodeID}</td>
+                                <td>${date}</td>
+                                <td>${(item.pm1 || 0).toFixed(2)}</td>
+                                <td>${(item.pm25 || 0).toFixed(2)}</td>
+                                <td>${(item.pm10 || 0).toFixed(2)}</td>
+                                <td>${(item.temp || 0).toFixed(1)}</td>
+                                <td>${(item.hum || 0).toFixed(1)}</td>
+                            </tr>
+                        `;
+                    });
+
+                    tableBody.innerHTML = tableHtml;
+                    dataTableInstance = initializeDataTable();
+                }
+                
+                // --- Función 3: Descargar CSV (reutilizable) ---
+                function downloadCSV(dataToDownload, fileName) {
+                    if (!dataToDownload || dataToDownload.length === 0) {
+                        alert("No se encontraron datos en el rango seleccionado para descargar.");
+                        return;
+                    }
+
+                    const headers = "Estacion,Timestamp,PM1,PM2.5,PM10,Temperatura,Humedad";
+                    let csvContent = headers + "\r\n";
+
+                    dataToDownload.forEach(item => {
+                        const row = [
+                            item.nodeID,
+                            item.timestamp, // ISO 8601 (bueno para CSV)
+                            item.pm1 || 0,
+                            item.pm25 || 0,
+                            item.pm10 || 0,
+                            item.temp || 0,
+                            item.hum || 0
+                        ].join(",");
+                        csvContent += row + "\r\n";
+                    });
+
+                    const encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
+                    const link = document.createElement("a");
+                    link.setAttribute("href", encodedUri);
+                    link.setAttribute("download", fileName);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+
+                // --- Función 4: Obtener datos PARA DESCARGA (nueva) ---
+                async function fetchDownloadData(nodeID, startDate, endDate, buttonToDisable) {
+                    console.log(`Pidiendo descarga para ${nodeID} de ${startDate} a ${endDate}`);
+                    
+                    const originalText = buttonToDisable.innerHTML;
+                    buttonToDisable.disabled = true;
+                    buttonToDisable.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Cargando...';
+
+                    try {
+                        const response = await fetch(`/api/data/${nodeID}?start=${startDate}&end=${endDate}`);
+                        if (!response.ok) throw new Error('Error al obtener los datos de la API');
+                        
+                        const data = await response.json();
+                        
+                        // Crear nombre de archivo
+                        const dateStr = startDate.split('T')[0];
+                        const fileName = `historicos_${nodeID}_${dateStr}.csv`;
+
+                        downloadCSV(data, fileName);
+
+                    } catch (error) {
+                        console.error(error);
+                        alert("Error al descargar los datos. Revisa la consola.");
+                    } finally {
+                        buttonToDisable.disabled = false;
+                        buttonToDisable.innerHTML = originalText;
+                    }
+                }
+                
+                // --- Función 5: Obtener la zona horaria local (Helper) ---
+                function getLocalTimezoneOffset() {
+                    const offsetMinutes = new Date().getTimezoneOffset();
+                    const offsetHours = Math.abs(offsetMinutes / 60);
+                    const sign = offsetMinutes > 0 ? "-" : "+";
+                    return sign + String(offsetHours).padStart(2, '0') + ':00';
+                }
+
+                // --- Añadir los Event Listeners ---
+                
+                zoneSelector.addEventListener('change', (e) => {
+                    fetchTableData(e.target.value);
+                });
+
+                viewLast20Button.addEventListener('click', () => {
+                    fetchTableData(zoneSelector.value);
+                });
+
+                downloadTodayButton.addEventListener('click', () => {
+                    const nodeID = zoneSelector.value;
+                    const today = new Date();
+                    
+                    // Obtener el inicio del día en la zona horaria local
+                    today.setHours(0, 0, 0, 0); 
+                    const startDate = today.toISOString(); // Convertir a UTC para la API
+                    
+                    // Obtener el fin del día en la zona horaria local
+                    today.setHours(23, 59, 59, 999); 
+                    const endDate = today.toISOString(); // Convertir a UTC para la API
+                    
+                    fetchDownloadData(nodeID, startDate, endDate, downloadTodayButton);
+                });
+
+                downloadRangeButton.addEventListener('click', () => {
+                    const nodeID = zoneSelector.value;
+                    const startDateInput = document.getElementById('dateStart').value;
+                    const endDateInput = document.getElementById('dateEnd').value;
+
+                    if (!startDateInput || !endDateInput) {
+                        alert("Por favor, selecciona una fecha de inicio y una fecha de fin.");
+                        return;
+                    }
+                    
+                    // Obtener el offset local, ej: "-06:00" (Chetumal)
+                    const timezoneOffset = getLocalTimezoneOffset(); 
+
+                    // Convertir fechas locales a ISO (UTC)
+                    // Asumimos que la fecha seleccionada es a las 00:00 de la zona local
+                    const startDate = new Date(startDateInput + 'T00:00:00' + timezoneOffset).toISOString();
+                    const endDate = new Date(endDateInput + 'T23:59:59' + timezoneOffset).toISOString();
+
+                    fetchDownloadData(nodeID, startDate, endDate, downloadRangeButton);
+                });
+
+
+                // --- Carga Inicial ---
+                fetchTableData(zoneSelector.value);
+            });
+        </script>
+        
+    </body>
+</html>
+
