@@ -11,7 +11,6 @@
         <link href="css/styles.css" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 
-        <!-- Estilos CSS para la Animación (Sin cambios) -->
         <style>
             .sensor-view-block {
                 transition: opacity 0.5s ease-out, max-height 0.5s ease-out, visibility 0.5s ease-out, margin-bottom 0.5s ease-out;
@@ -37,25 +36,17 @@
             <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
             </form>
             
-            <!-- ============================================== -->
-            <!-- === AÑADIDO: Menú de Usuario === -->
-            <!-- ============================================== -->
             <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-user fa-fw me-1"></i>
-                        <span id="userEmailDisplay">Usuario</span> <!-- Mostraremos el email aquí -->
-                    </a>
+                        <span id="userEmailDisplay">Usuario</span> </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                         <li><a class="dropdown-item" id="logoutButton" href="#!">Cerrar Sesión</a></li>
                     </ul>
                 </li>
             </ul>
-            <!-- ============================================== -->
-            <!-- === FIN: Menú de Usuario === -->
-            <!-- ============================================== -->
-
-        </nav>
+            </nav>
         <div id="layoutSidenav">
             <div id="layoutSidenav_nav">
                 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
@@ -77,9 +68,6 @@
                             </a>
                         </div>
                     </div>
-                    <!-- ============================================== -->
-                    <!-- === MODIFICADO: Pie del menú lateral (ahora es dinámico) === -->
-                    <!-- ============================================== -->
                     <div class="sb-sidenav-footer">
                         <div class="small">Conectado como:</div>
                         <span id="userEmailSidenav">Cargando...</span>
@@ -94,7 +82,6 @@
                             <li class="breadcrumb-item active">Datos en Tiempo Real</li>
                         </ol>
                         
-                        <!-- Selector de Zona (Sin cambios) -->
                         <div class="mb-4">
                             <label for="zoneSelector" class="form-label"><strong>Seleccionar Estación:</strong></label>
                             <select class="form-select" id="zoneSelector">
@@ -104,10 +91,8 @@
                         </div>
                         
                         
-                        <!-- BLOQUE SENSOR 1: "Sensor_Sala" (Sin cambios) -->
                         <div id="sensor-block-Sensor_Sala" class="sensor-view-block is-visible">
                             
-                            <!-- Simbología de Calidad del Aire (para Sala) -->
                             <div class="card mb-3"> 
                                 <div class="card-header py-2"> 
                                     <strong class="small"><i class="fas fa-palette me-1"></i> Simbología: Calidad del Aire (NOM-172)</strong>
@@ -123,9 +108,7 @@
                                 </div>
                             </div>
 
-                            <!-- Fila de Partículas (para Sala) -->
                             <div class="row">
-                                <!-- Tarjeta PM1 (Sala) -->
                                 <div class="col-xl-4 col-md-6">
                                     <div id="card-pm1-Sensor_Sala" class="card bg-secondary text-white mb-4 shadow-lg">
                                         <div class="card-body d-flex justify-content-between align-items-center">
@@ -141,7 +124,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Tarjeta PM2.5 (Sala) -->
                                 <div class="col-xl-4 col-md-6">
                                     <div id="card-pm25-Sensor_Sala" class="card bg-secondary text-white mb-4 shadow-lg">
                                         <div class="card-body d-flex justify-content-between align-items-center">
@@ -157,7 +139,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Tarjeta PM10 (Sala) -->
                                 <div class="col-xl-4 col-md-6">
                                     <div id="card-pm10-Sensor_Sala" class="card bg-secondary text-white mb-4 shadow-lg">
                                         <div class="card-body d-flex justify-content-between align-items-center">
@@ -175,9 +156,7 @@
                                 </div>
                             </div> 
 
-                            <!-- Fila Ambientales (para Sala) -->
                             <div class="row">
-                                <!-- Columna Temperatura (Sala) -->
                                 <div class="col-xl-6 col-md-6">
                                     <div class="card mb-3">
                                         <div class="card-header py-2"><strong class="small"><i class="fas fa-thermometer-half me-1"></i> Simbología: Temperatura</strong></div>
@@ -203,7 +182,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Columna Humedad (Sala) -->
                                 <div class="col-xl-6 col-md-6">
                                     <div class="card mb-3">
                                         <div class="card-header py-2"><strong class="small"><i class="fas fa-tint me-1"></i> Simbología: Humedad</strong></div>
@@ -232,10 +210,8 @@
                             </div>
                         </div> 
                         
-                        <!-- BLOQUE SENSOR 2: "Sensor_Patio" (Sin cambios) -->
                         <div id="sensor-block-Sensor_Patio" class="sensor-view-block">
                             
-                            <!-- Simbología de Calidad del Aire (para Patio) -->
                             <div class="card mb-3"> 
                                 <div class="card-header py-2"> 
                                     <strong class="small"><i class="fas fa-palette me-1"></i> Simbología: Calidad del Aire (NOM-172)</strong>
@@ -251,9 +227,7 @@
                                 </div>
                             </div>
 
-                            <!-- Fila de Partículas (para Patio) -->
                             <div class="row">
-                                <!-- Tarjeta PM1 (Patio) -->
                                 <div class="col-xl-4 col-md-6">
                                     <div id="card-pm1-Sensor_Patio" class="card bg-secondary text-white mb-4 shadow-lg">
                                         <div class="card-body d-flex justify-content-between align-items-center">
@@ -269,7 +243,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Tarjeta PM2.5 (Patio) -->
                                 <div class="col-xl-4 col-md-6">
                                     <div id="card-pm25-Sensor_Patio" class="card bg-secondary text-white mb-4 shadow-lg">
                                         <div class="card-body d-flex justify-content-between align-items-center">
@@ -285,7 +258,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Tarjeta PM10 (Patio) -->
                                 <div class="col-xl-4 col-md-6">
                                     <div id="card-pm10-Sensor_Patio" class="card bg-secondary text-white mb-4 shadow-lg">
                                         <div class="card-body d-flex justify-content-between align-items-center">
@@ -303,9 +275,7 @@
                                 </div>
                             </div> 
 
-                            <!-- Fila Ambientales (para Patio) -->
                             <div class="row">
-                                <!-- Columna Temperatura (Patio) -->
                                 <div class="col-xl-6 col-md-6">
                                     <div class="card mb-3">
                                         <div class="card-header py-2"><strong class="small"><i class="fas fa-thermometer-half me-1"></i> Simbología: Temperatura</strong></div>
@@ -331,7 +301,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Columna Humedad (Patio) -->
                                 <div class="col-xl-6 col-md-6">
                                     <div class="card mb-3">
                                         <div class="card-header py-2"><strong class="small"><i class="fas fa-tint me-1"></i> Simbología: Humedad</strong></div>
@@ -379,9 +348,6 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="js/scripts.js"></script>
         
-        <!-- ============================================== -->
-        <!-- === SCRIPT DE WEBSOCKET (CORREGIDO Y COMPLETO) === -->
-        <!-- ============================================== -->
         <script>
             // Variable global para la función connectWebSocket
             let connectWebSocket; 
@@ -399,17 +365,17 @@
                             else if (value <= 45) newColor = 'bg-success';  
                             else if (value <= 79) newColor = 'bg-warning';  
                             else if (value <= 147) newColor = 'bg-danger';   
-                            else newColor = 'bg-dark';         
+                            else newColor = 'bg-dark';          
                             break;
                         case 'pm10': 
                             if (value <= 50) newColor = 'bg-primary';       
                             else if (value <= 75) newColor = 'bg-success';   
                             else if (value <= 155) newColor = 'bg-warning';  
                             else if (value <= 235) newColor = 'bg-danger';   
-                            else newColor = 'bg-dark';         
+                            else newColor = 'bg-dark';          
                             break;
                         case 'temp': 
-                            if (value < 18) newColor = 'bg-info';         
+                            if (value < 18) newColor = 'bg-info';          
                             else if (value <= 29) newColor = 'bg-success';    
                             else newColor = 'bg-danger';        
                             break;
@@ -463,9 +429,15 @@
                     }, 500); 
                 }
                 
-                // --- MODIFICADO: Definimos la función global ---
+                // --- MODIFICADO: FUNCIÓN DE CONEXIÓN AUTOMÁTICA (LOCAL Y NUBE) ---
                 connectWebSocket = function() {
-                    const ws = new WebSocket('ws://localhost:8080');
+                    // Detecta automáticamente si debe usar ws:// o wss:// y qué dominio usar
+                    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                    const host = window.location.host;
+                    
+                    console.log(`Conectando WebSocket a: ${protocol}//${host}`);
+                    const ws = new WebSocket(`${protocol}//${host}`);
+
                     ws.onopen = () => {
                         console.log('Conectado al servidor WebSocket 🚀');
                         document.querySelectorAll('.last-update-time').forEach(el => el.textContent = 'Conectado. Esperando...');
@@ -514,9 +486,6 @@
             });
         </script>
 
-        <!-- ============================================== -->
-        <!-- === AÑADIDO: Script de Sesión y Logout === -->
-        <!-- ============================================== -->
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 
@@ -526,7 +495,7 @@
                 if (!userEmail) {
                     // Si no hay email, significa que no ha iniciado sesión.
                     // ¡Lo botamos al login!
-                    alert('Por favor, inicia sesión para continuar.');
+                    // alert('Por favor, inicia sesión para continuar.'); // Opcional
                     window.location.href = 'login.html';
                 } else {
                     // 2. Si SÍ ha iniciado sesión, mostramos su email
@@ -556,4 +525,3 @@
         
     </body>
 </html>
-
